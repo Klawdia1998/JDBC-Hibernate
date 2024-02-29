@@ -31,9 +31,22 @@ public class Util {
 
     public static SessionFactory getSessionFactory() {
         try {
-            sessionFactory = new Configuration()
-                    .addAnnotatedClass(User.class)
-                    .buildSessionFactory();
+            Configuration configuration = new Configuration()
+                    .setProperty("hibernate.connection.driver_class", DRIVER)
+                    .setProperty("hibernate.connection.url", URL)
+                    .setProperty("hibernate.connection.username", USER)
+                    .setProperty("hibernate.connection.password", PASSWORD)
+                    .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
+                    .setProperty("hibernate.show_sql", "true")
+                    .setProperty("hibernate.current_session_context_class", "thread")
+                    .setProperty("hibernate.hbm2ddl.auto", "create-drop")
+                    .addAnnotatedClass(User.class);
+
+            StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
+                    .applySettings(configuration.getProperties());
+
+            sessionFactory = configuration.buildSessionFactory(builder.build());
+
         } catch (HibernateException e) {
             e.printStackTrace();
         }
